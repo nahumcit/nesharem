@@ -121,7 +121,7 @@ git init
 git add .
 git commit -m "Sitio inicial"
 git branch -M main
-git remote add origin https://github.com/TU-USUARIO/nesharem.git
+git remote add origin https://github.com/nahumcit/nesharem.git
 git push -u origin main
 ```
 
