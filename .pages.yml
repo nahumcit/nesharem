@@ -1,4 +1,4 @@
-﻿media:
+media:
   input: public/uploads
   output: /uploads
 
@@ -38,13 +38,13 @@ content:
         options:
           values:
             - name: es
-              label: EspaÃ±ol
+              label: Español
             - name: en
               label: English
             - name: ja
-              label: æ—¥æœ¬èªž
+              label: 日本語
             - name: zh
-              label: ä¸­æ–‡
+              label: 中文
       - name: translationKey
         type: string
         description: "Mismo valor en las traducciones del mismo post."
@@ -56,13 +56,13 @@ content:
             - name: personal
               label: Personal
             - name: filosofia
-              label: FilosofÃ­a
+              label: Filosofía
             - name: teologia
-              label: TeologÃ­a
+              label: Teología
             - name: economia
-              label: EconomÃ­a
+              label: Economía
             - name: futbol
-              label: FÃºtbol
+              label: Fútbol
             - name: dibujo
               label: Dibujo
             - name: anime
@@ -183,7 +183,7 @@ content:
         type: text
 
   - name: gallery
-    label: GalerÃ­a
+    label: Galería
     type: file
     path: src/data/gallery.json
     format: json
