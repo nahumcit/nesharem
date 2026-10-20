@@ -129,7 +129,7 @@ git push -u origin main
    - Framework preset: **Astro**
    - Build command: `npm run build`
    - Build output directory: `dist`
-   - Variable de entorno: `NODE_VERSION=22.22.0` (si el build usa una versión anterior)
+   - Variable de entorno: `NODE_VERSION=24` (Cloudflare usa Node 22.x por defecto)
 4. El sitio quedará en `https://nesharem.pages.dev` (o el nombre de proyecto que elijas). Si cambia, actualiza `site` en `astro.config.mjs` y `url` en `src/data/site.json`.
 5. La carpeta `functions/` se despliega automáticamente como Pages Function: no requiere configuración extra. El contador aparecerá como `—` en `npm run dev` porque las Functions solo corren en Cloudflare.
 
