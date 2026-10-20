@@ -1,0 +1,61 @@
+---
+import Base from '../../../../../layouts/Base.astro';
+import PostCard from '../../../../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { languages, type Lang } from '../../../../../i18n/ui';
+import { getPosts } from '../../../../../lib/posts';
+import { formatMonth, pad2, t } from '../../../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  return languages.flatMap((lang) => {
+    const combos = new Map<string, { year: number; month: number }>();
+
+    posts
+      .filter((post) => post.data.lang === lang)
+      .forEach((post) => {
+        const year = post.data.date.getUTCFullYear();
+        const month = post.data.date.getUTCMonth() + 1;
+        combos.set(`${year}-${pad2(month)}`, { year, month });
+      });
+
+    return [...combos.values()].map(({ year, month }) => ({
+      params: { lang, year: String(year), month: pad2(month) },
+      props: { year, month },
+    }));
+  });
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const { year, month } = Astro.props as { year: number; month: number };
+const all = await getPosts(lang);
+const posts = all.filter(
+  (post) =>
+    post.data.date.getUTCFullYear() === year && post.data.date.getUTCMonth() + 1 === month
+);
+---
+
+<Base
+  lang={lang}
+  title={`${formatMonth(month, lang)} ${year} — nesharem`}
+  description={`${t(lang, 'archive')} ${formatMonth(month, lang)} ${year}`}
+>
+  <div class="wrap">
+    <p class="mono">
+      <a href={`/${lang}/blog/`}>← {t(lang, 'backToBlog')}</a>
+      <span aria-hidden="true"> · </span>
+      <a href={`/${lang}/blog/archive/${year}/`}>{year}</a>
+    </p>
+
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'archive')}</span>
+      <h1>{formatMonth(month, lang)} {year}</h1>
+      <p class="muted">{posts.length} {t(lang, 'allPosts')}</p>
+    </header>
+
+    <div class="grid grid--posts">
+      {posts.map((post) => <PostCard post={post} lang={lang} />)}
+    </div>
+  </div>
+</Base>

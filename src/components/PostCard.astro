@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, readingTime, t, topicLabel, type Lang } from '../lib/site';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  lang: Lang;
+}
+
+const { post, lang } = Astro.props;
+const href = `/${lang}/blog/${post.data.slug}`;
+const topics = post.data.topics.slice(0, 3);
+---
+
+<article
+  class="card post-card"
+  data-post-card
+  data-title={`${post.data.title} ${post.data.excerpt} ${post.data.topics.join(' ')} ${post.data.author}`.toLowerCase()}
+  data-year={post.data.date.getUTCFullYear()}
+  data-author={post.data.author}
+  data-tags={post.data.topics.join(',')}
+>
+  <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>
+  <h3><a href={href}>{post.data.title}</a></h3>
+  <p>{post.data.excerpt}</p>
+  <div class="topics">
+    {
+      topics.map((topic) => (
+        <a class="topic-pill" href={`/${lang}/blog/topic/${topic}`}>{topicLabel(topic, lang)}</a>
+      ))
+    }
+    <span class="topic-pill">{readingTime(post.body ?? '')} {t(lang, 'minShort')}</span>
+  </div>
+</article>

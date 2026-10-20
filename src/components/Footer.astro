@@ -1,0 +1,37 @@
+---
+import profile from '../data/profile.json';
+import { t, type Lang } from '../lib/site';
+import Badges from './Badges.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-title">nesharem</p>
+      <p class="footer-note">{t(lang, 'footerNote')}</p>
+      <div class="footer-links">
+        <a href={profile.kofi} target="_blank" rel="noopener noreferrer">Ko-fi</a>
+        <a href={`/${lang}/rss.xml`}>RSS</a>
+        <a href={`/${lang}/blog`}>{t(lang, 'navBlog')}</a>
+        <a href={`/${lang}/about`}>{t(lang, 'navAbout')}</a>
+      </div>
+    </div>
+    <div class="footer-side">
+      <Badges lang={lang} />
+      <div class="counter">
+        <span>{t(lang, 'visits')}</span>
+        <strong id="visit-count" data-endpoint="/api/visits">····</strong>
+      </div>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© <span data-year>2026</span> Nahum</span>
+    <span>{t(lang, 'madeWith')}</span>
+  </div>
+</footer>

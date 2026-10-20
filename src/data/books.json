@@ -1,0 +1,13 @@
+[
+  {
+    "title": "The Name of the Rose",
+    "author": "Umberto Eco",
+    "cover": "/covers/books/the-name-of-the-rose.jpg",
+    "status": "read",
+    "score": 10,
+    "year": 1980,
+    "isbn": "9780156012195",
+    "favorite": true,
+    "notes": ""
+  }
+]

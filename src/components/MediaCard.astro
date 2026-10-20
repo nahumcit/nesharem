@@ -1,0 +1,82 @@
+---
+import Cover from './Cover.astro';
+import { statusLabel, t, type Lang } from '../lib/site';
+
+interface Props {
+  item: {
+    title: string;
+    cover?: string;
+    status?: string;
+    score?: number;
+    year?: number | string;
+    episodes?: number;
+    format?: string;
+    platform?: string;
+    hours?: number;
+    author?: string;
+    favorite?: boolean;
+    steamAppId?: number;
+    notes?: string;
+  };
+  type: 'anime' | 'game' | 'book';
+  lang: Lang;
+}
+
+const { item, type, lang } = Astro.props;
+
+const meta: string[] = [];
+if (type === 'anime') {
+  if (item.year) meta.push(String(item.year));
+  if (item.episodes) meta.push(`${item.episodes} ${t(lang, 'episodes')}`);
+  if (item.format) meta.push(item.format);
+}
+if (type === 'game') {
+  if (item.year) meta.push(String(item.year));
+  if (item.platform) meta.push(item.platform);
+  if (item.hours) meta.push(`${item.hours} ${t(lang, 'hoursPlayed')}`);
+}
+if (type === 'book') {
+  if (item.author) meta.push(item.author);
+  if (item.year) meta.push(String(item.year));
+}
+
+const search = [item.title, item.author, item.platform, item.format, item.year]
+  .filter(Boolean)
+  .join(' ')
+  .toLowerCase();
+
+const score = typeof item.score === 'number' ? item.score : 0;
+---
+
+<article
+  class="card media-card"
+  data-media-card
+  data-title={search}
+  data-status={item.status ?? ''}
+  data-year={item.year ?? ''}
+  data-favorite={item.favorite ? '1' : '0'}
+  title={item.notes || undefined}
+>
+  <Cover
+    src={item.cover}
+    alt={t(lang, 'coverAlt', { title: item.title })}
+    title={item.title}
+  />
+  <div class="media-body">
+    <h3>{item.title}</h3>
+    {meta.length > 0 && <p class="media-meta">{meta.map((value) => <span>{value}</span>)}</p>}
+    <div class="media-foot">
+      {
+        item.status ? (
+          <span class="status" data-status={item.status}>{statusLabel(item.status, lang)}</span>
+        ) : (
+          <span></span>
+        )
+      }
+      <span class="score">
+        {item.favorite && <span class="star" aria-label={t(lang, 'favorite')}>★</span>}
+        {score > 0 && <span> {score}/10</span>}
+      </span>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,42 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { languages, type Lang } from '../../../../i18n/ui';
+import { getPosts, topicsOf } from '../../../../lib/posts';
+import { t, topicLabel } from '../../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  return languages.flatMap((lang) => {
+    const topics = topicsOf(posts.filter((post) => post.data.lang === lang));
+    return topics.map((topic) => ({ params: { lang, topic }, props: { topic } }));
+  });
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const { topic } = Astro.props as { topic: string };
+const all = await getPosts(lang);
+const posts = all.filter((post) => post.data.topics.includes(topic));
+---
+
+<Base
+  lang={lang}
+  title={`${topicLabel(topic, lang)} — ${t(lang, 'navBlog')} — nesharem`}
+  description={`${t(lang, 'topicLabel')}: ${topicLabel(topic, lang)}`}
+>
+  <div class="wrap">
+    <p class="mono"><a href={`/${lang}/blog/`}>← {t(lang, 'backToBlog')}</a></p>
+
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'topicLabel')}</span>
+      <h1>{topicLabel(topic, lang)}</h1>
+      <p class="muted">{posts.length} {t(lang, 'allPosts')}</p>
+    </header>
+
+    <div class="grid grid--posts">
+      {posts.map((post) => <PostCard post={post} lang={lang} />)}
+    </div>
+  </div>
+</Base>

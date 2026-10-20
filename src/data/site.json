@@ -1,0 +1,14 @@
+{
+  "title": "nesharem",
+  "url": "https://nesharem.pages.dev",
+  "avatar": "/avatar.png",
+  "kofi": "https://ko-fi.com/nahumcm",
+  "counterNamespace": "nesharem/visits",
+  "rss": "/rss.xml",
+  "description": {
+    "es": "El rincón de Nahum: dibujo, fútbol, filosofía, teología, economía, anime, juegos y libros.",
+    "en": "Nahum's corner: drawing, football, philosophy, theology, economics, anime, games and books.",
+    "ja": "ナフムの場所。絵、サッカー、哲学、神学、経済学、アニメ、ゲーム、本。",
+    "zh": "Nahum 的角落：绘画、足球、哲学、神学、经济学、动画、游戏和书。"
+  }
+}

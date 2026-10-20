@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>nesharem</title>
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content="0; url=/es/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem('nesharem-lang');
+        } catch (error) {}
+        var supported = ['es', 'en', 'ja', 'zh'];
+        var lang = supported.indexOf(saved) >= 0 ? saved : null;
+        if (!lang) {
+          var browser = (navigator.language || 'es').slice(0, 2).toLowerCase();
+          lang = supported.indexOf(browser) >= 0 ? browser : 'es';
+        }
+        window.location.replace('/' + lang + '/');
+      })();
+    </script>
+  </head>
+  <body>
+    <p><a href="/es/">nesharem</a></p>
+  </body>
+</html>

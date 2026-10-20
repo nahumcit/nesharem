@@ -1,0 +1,33 @@
+---
+import kofi from '../data/kofi.json';
+import { t, type Lang } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const items = kofi.slice(0, 6);
+---
+
+{
+  items.length > 0 ? (
+    <div class="grid grid--kofi">
+      {items.map((item) => (
+        <a
+          class="card kofi-card"
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src={item.image} alt={item.title} loading="lazy" />
+          <span>{item.title}</span>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <div class="empty">
+      <p>{t(lang, 'kofiEmpty')}</p>
+    </div>
+  )
+}

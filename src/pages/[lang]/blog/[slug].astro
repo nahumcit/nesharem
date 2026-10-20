@@ -1,0 +1,140 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { languages, type Lang } from '../../../i18n/ui';
+import { sortPosts, type Post } from '../../../lib/posts';
+import { formatDate, readingTime, slugify, t, topicLabel } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  return languages.flatMap((lang) =>
+    posts
+      .filter((post) => post.data.lang === lang)
+      .map((post) => ({
+        params: { lang, slug: post.data.slug },
+        props: { post },
+      }))
+  );
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const { post } = Astro.props as { post: Post };
+
+const all = await getCollection('posts', ({ data }) => !data.draft);
+
+const translations = Object.fromEntries(
+  languages.map((code) => {
+    if (code === lang) return [code, `/${lang}/blog/${post.data.slug}/`];
+    const match = all.find(
+      (candidate) =>
+        candidate.data.lang === code &&
+        post.data.translationKey &&
+        candidate.data.translationKey === post.data.translationKey
+    );
+    return [code, match ? `/${code}/blog/${match.data.slug}/` : null];
+  })
+) as Partial<Record<Lang, string | null>>;
+
+const sameLang = sortPosts(all.filter((candidate) => candidate.data.lang === lang));
+const index = sameLang.findIndex((candidate) => candidate.id === post.id);
+const newer = index > 0 ? sameLang[index - 1] : null;
+const older = index >= 0 && index < sameLang.length - 1 ? sameLang[index + 1] : null;
+
+const related = sameLang
+  .filter(
+    (candidate) =>
+      candidate.id !== post.id &&
+      candidate.data.topics.some((topic) => post.data.topics.includes(topic))
+  )
+  .slice(0, 3);
+
+const { Content } = await render(post);
+const minutes = readingTime(post.body ?? '');
+---
+
+<Base
+  lang={lang}
+  title={`${post.data.title} — nesharem`}
+  description={post.data.excerpt}
+  translations={translations}
+  image={post.data.cover}
+  type="article"
+>
+  <div class="wrap wrap--narrow">
+    <p class="mono"><a href={`/${lang}/blog`}>← {t(lang, 'backToBlog')}</a></p>
+
+    <header class="post-header mt-2">
+      <span class="kicker">{t(lang, 'published')} · {formatDate(post.data.date, lang, 'long')}</span>
+      <h1>{post.data.title}</h1>
+      <div class="post-meta">
+        <span>{t(lang, 'by')} <a href={`/${lang}/blog/author/${slugify(post.data.author)}/`}>{post.data.author}</a></span>
+        <span>{minutes} {t(lang, 'minRead')}</span>
+        {post.data.updated && <span>{t(lang, 'updated')}: {formatDate(post.data.updated, lang)}</span>}
+      </div>
+      {
+        post.data.topics.length > 0 && (
+          <div class="chips">
+            {post.data.topics.map((topic) => (
+              <a class="chip" href={`/${lang}/blog/topic/${topic}/`}>{topicLabel(topic, lang)}</a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    {post.data.cover && <img class="post-cover" src={post.data.cover} alt={post.data.title} />}
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    {
+      post.data.tags.length > 0 && (
+        <div class="post-tags">
+          {post.data.tags.map((tag) => <span class="topic-pill">#{tag}</span>)}
+        </div>
+      )
+    }
+
+    {
+      (older || newer) && (
+        <nav class="pagination-links" aria-label={t(lang, 'navBlog')}>
+          {older ? (
+            <a href={`/${lang}/blog/${older.data.slug}/`}>
+              <small>← {t(lang, 'previous')}</small>
+              <strong>{older.data.title}</strong>
+            </a>
+          ) : (
+            <span></span>
+          )}
+          {newer ? (
+            <a class="next" href={`/${lang}/blog/${newer.data.slug}/`}>
+              <small>{t(lang, 'next')} →</small>
+              <strong>{newer.data.title}</strong>
+            </a>
+          ) : (
+            <span></span>
+          )}
+        </nav>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <span class="kicker">{t(lang, 'topics')}</span>
+              <h2>{t(lang, 'related')}</h2>
+            </div>
+          </div>
+          <div class="grid grid--posts">
+            {related.map((item) => <PostCard post={item} lang={lang} />)}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</Base>

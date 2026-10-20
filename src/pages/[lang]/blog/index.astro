@@ -1,0 +1,123 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { languages, type Lang } from '../../../i18n/ui';
+import { archiveOf, authorsOf, getPosts, topicsOf } from '../../../lib/posts';
+import { formatMonth, slugify, t, topicLabel } from '../../../lib/site';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const posts = await getPosts(lang);
+const topics = topicsOf(posts);
+const years = [...new Set(posts.map((post) => post.data.date.getUTCFullYear()))].sort((a, b) => b - a);
+const authors = authorsOf(posts);
+const archive = archiveOf(posts);
+---
+
+<Base
+  lang={lang}
+  title={`${t(lang, 'navBlog')} — nesharem`}
+  description={t(lang, 'latestPosts')}
+>
+  <div class="wrap">
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'navBlog')}</span>
+      <h1>{t(lang, 'navBlog')}</h1>
+      <p class="muted">{posts.length} · {t(lang, 'allPosts')} · <a href={`/${lang}/rss.xml`}>RSS</a></p>
+    </header>
+
+    {
+      posts.length > 0 ? (
+        <div data-filter-root>
+          <div class="filters">
+            <input
+              type="search"
+              data-filter="search"
+              placeholder={t(lang, 'searchPosts')}
+              aria-label={t(lang, 'searchPosts')}
+            />
+            {topics.length > 1 && (
+              <select data-filter="tag" aria-label={t(lang, 'topics')}>
+                <option value="">{t(lang, 'topics')}</option>
+                {topics.map((topic) => (
+                  <option value={topic}>{topicLabel(topic, lang)}</option>
+                ))}
+              </select>
+            )}
+            {years.length > 1 && (
+              <select data-filter="year" aria-label={t(lang, 'filterByYear')}>
+                <option value="">{t(lang, 'allYears')}</option>
+                {years.map((year) => <option value={String(year)}>{year}</option>)}
+              </select>
+            )}
+            {authors.length > 1 && (
+              <select data-filter="author" aria-label={t(lang, 'filterByAuthor')}>
+                <option value="">{t(lang, 'filterByAuthor')}</option>
+                {authors.map((author) => <option value={author}>{author}</option>)}
+              </select>
+            )}
+            <span class="count" data-filter-count></span>
+          </div>
+
+          <div class="grid grid--posts">
+            {posts.map((post) => <PostCard post={post} lang={lang} />)}
+          </div>
+
+          <div class="no-results">{t(lang, 'noResults')}</div>
+        </div>
+      ) : (
+        <div class="empty">
+          <h3>{t(lang, 'noPosts')}</h3>
+          <p>{t(lang, 'langNotice')}</p>
+          <a class="btn btn--sm" href="/es/blog/">{t(lang, 'seeOtherLang')}</a>
+        </div>
+      )
+    }
+
+    {
+      archive.length > 0 && (
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <span class="kicker">{t(lang, 'archive')}</span>
+              <h2>{t(lang, 'archive')}</h2>
+            </div>
+          </div>
+
+          <div class="grid grid--posts">
+            {archive.map(({ year, months }) => (
+              <div class="card about-card">
+                <span class="kicker">{t(lang, 'yearLabel')}</span>
+                <h3><a href={`/${lang}/blog/archive/${year}/`}>{year}</a></h3>
+                <div class="chips">
+                  {months.map((month) => (
+                    <a class="chip" href={`/${lang}/blog/archive/${year}/${String(month).padStart(2, '0')}/`}>
+                      {formatMonth(month, lang)}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      authors.length > 0 && (
+        <section class="section">
+          <div class="chips">
+            {authors.map((author) => (
+              <a class="chip" href={`/${lang}/blog/author/${slugify(author)}/`}>
+                {t(lang, 'authorLabel')}: {author}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</Base>

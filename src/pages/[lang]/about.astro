@@ -1,0 +1,85 @@
+---
+import Base from '../../layouts/Base.astro';
+import profile from '../../data/profile.json';
+import site from '../../data/site.json';
+import { languages, type Lang } from '../../i18n/ui';
+import { hobbyLabel, interestLabel, t } from '../../lib/site';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const bio = profile.bio[lang].split('\n\n');
+const interests = profile.interests.map((key) => interestLabel(key, lang));
+const hobbies = profile.hobbies.map((key) => hobbyLabel(key, lang));
+---
+
+<Base
+  lang={lang}
+  title={`${t(lang, 'aboutTitle')} — nesharem`}
+  description={site.description[lang]}
+>
+  <div class="wrap wrap--narrow">
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'navAbout')}</span>
+      <h1>{t(lang, 'aboutTitle')}</h1>
+      <p class="muted">{profile.tagline[lang]}</p>
+    </header>
+
+    <div class="about-grid">
+      <article class="card about-card">
+        <div class="bio">
+          {bio.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        <div class="list-block">
+          <h3>{t(lang, 'interests')}</h3>
+          <ul class="chips">
+            {interests.map((interest) => <li class="chip">{interest}</li>)}
+          </ul>
+        </div>
+
+        <div class="list-block">
+          <h3>{t(lang, 'hobbies')}</h3>
+          <ul class="chips">
+            {hobbies.map((hobby) => <li class="chip">{hobby}</li>)}
+          </ul>
+        </div>
+      </article>
+
+      <aside class="card about-card">
+        <img
+          class="avatar"
+          src={profile.avatar}
+          alt={t(lang, 'avatarAlt')}
+          width="210"
+          height="210"
+        />
+
+        <p class="mt-2"><span class="sticker">{profile.handle}</span></p>
+
+        <div class="list-block">
+          <h3>{t(lang, 'links')}</h3>
+          <ul class="link-list">
+            {
+              profile.links.map((link) => (
+                <li>
+                  <a href={link.url} target="_blank" rel="noopener noreferrer">
+                    <span>{link.label}</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <p class="mt-3 muted">{t(lang, 'kofiIntro')}</p>
+        <a class="btn mt-2" href={profile.kofi} target="_blank" rel="noopener noreferrer">
+          {t(lang, 'viewKofi')}
+        </a>
+      </aside>
+    </div>
+  </div>
+</Base>

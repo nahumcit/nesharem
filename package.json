@@ -1,0 +1,28 @@
+{
+  "name": "nesharem",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "add:anime": "node tools/add-anime.mjs",
+    "add:game": "node tools/add-game.mjs",
+    "add:book": "node tools/add-book.mjs",
+    "sync:kofi": "node tools/sync-kofi.mjs"
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.19",
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "^7.4.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.11",
+    "typescript": "^5.9.3"
+  }
+}

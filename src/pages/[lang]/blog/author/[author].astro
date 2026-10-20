@@ -1,0 +1,50 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { languages, type Lang } from '../../../../i18n/ui';
+import { getPosts } from '../../../../lib/posts';
+import { slugify, t } from '../../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  return languages.flatMap((lang) => {
+    const authors = new Map<string, string>();
+
+    posts
+      .filter((post) => post.data.lang === lang)
+      .forEach((post) => authors.set(slugify(post.data.author), post.data.author));
+
+    return [...authors.entries()].map(([slug, author]) => ({
+      params: { lang, author: slug },
+      props: { author },
+    }));
+  });
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const { author } = Astro.props as { author: string };
+const all = await getPosts(lang);
+const posts = all.filter((post) => slugify(post.data.author) === slugify(author));
+---
+
+<Base
+  lang={lang}
+  title={`${author} — ${t(lang, 'navBlog')} — nesharem`}
+  description={`${t(lang, 'authorLabel')}: ${author}`}
+>
+  <div class="wrap">
+    <p class="mono"><a href={`/${lang}/blog/`}>← {t(lang, 'backToBlog')}</a></p>
+
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'authorLabel')}</span>
+      <h1>{author}</h1>
+      <p class="muted">{posts.length} {t(lang, 'allPosts')}</p>
+    </header>
+
+    <div class="grid grid--posts">
+      {posts.map((post) => <PostCard post={post} lang={lang} />)}
+    </div>
+  </div>
+</Base>

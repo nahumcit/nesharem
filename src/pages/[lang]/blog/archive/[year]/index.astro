@@ -1,0 +1,57 @@
+---
+import Base from '../../../../../layouts/Base.astro';
+import PostCard from '../../../../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { languages, type Lang } from '../../../../../i18n/ui';
+import { getPosts } from '../../../../../lib/posts';
+import { formatMonth, pad2, t } from '../../../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  return languages.flatMap((lang) => {
+    const years = [
+      ...new Set(
+        posts
+          .filter((post) => post.data.lang === lang)
+          .map((post) => post.data.date.getUTCFullYear())
+      ),
+    ];
+
+    return years.map((year) => ({ params: { lang, year: String(year) }, props: { year } }));
+  });
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const { year } = Astro.props as { year: number };
+const all = await getPosts(lang);
+const posts = all.filter((post) => post.data.date.getUTCFullYear() === year);
+const months = [...new Set(posts.map((post) => post.data.date.getUTCMonth() + 1))].sort((a, b) => b - a);
+---
+
+<Base
+  lang={lang}
+  title={`${t(lang, 'archive')} ${year} — nesharem`}
+  description={`${t(lang, 'archive')} ${year}`}
+>
+  <div class="wrap">
+    <p class="mono"><a href={`/${lang}/blog/`}>← {t(lang, 'backToBlog')}</a></p>
+
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'archive')}</span>
+      <h1>{year}</h1>
+      <p class="muted">{posts.length} {t(lang, 'allPosts')}</p>
+      <div class="chips">
+        {months.map((month) => (
+          <a class="chip" href={`/${lang}/blog/archive/${year}/${pad2(month)}/`}>
+            {formatMonth(month, lang)}
+          </a>
+        ))}
+      </div>
+    </header>
+
+    <div class="grid grid--posts">
+      {posts.map((post) => <PostCard post={post} lang={lang} />)}
+    </div>
+  </div>
+</Base>

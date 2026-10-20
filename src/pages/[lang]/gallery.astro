@@ -1,0 +1,185 @@
+---
+import Base from '../../layouts/Base.astro';
+import Empty from '../../components/Empty.astro';
+import gallery from '../../data/gallery.json';
+import profile from '../../data/profile.json';
+import { languages, type Lang } from '../../i18n/ui';
+import { t } from '../../lib/site';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+
+interface GalleryItem {
+  image: string;
+  title: string;
+  date?: string;
+  medium?: string;
+  tags?: string[];
+}
+
+const galleryItems: GalleryItem[] = gallery;
+
+const items = galleryItems.map((item) => {
+  const year = item.date ? new Date(item.date).getUTCFullYear() : '';
+  return {
+    ...item,
+    year,
+    tags: item.tags ?? [],
+  };
+});
+
+const tags = [...new Set(items.flatMap((item) => item.tags))].sort();
+const years = [...new Set(items.map((item) => Number(item.year)).filter(Boolean))].sort((a, b) => b - a);
+---
+
+<Base lang={lang} title={`${t(lang, 'galleryTitle')} — nesharem`} description={t(lang, 'galleryIntro')}>
+  <div class="wrap">
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'navGallery')}</span>
+      <h1>{t(lang, 'galleryTitle')}</h1>
+      <p class="muted">{t(lang, 'galleryIntro')}</p>
+    </header>
+
+    {
+      items.length > 0 ? (
+        <div data-filter-root>
+          <div class="filters">
+            <input
+              type="search"
+              data-filter="search"
+              placeholder={t(lang, 'searchGallery')}
+              aria-label={t(lang, 'searchGallery')}
+            />
+            {tags.length > 0 && (
+              <select data-filter="tag" aria-label={t(lang, 'tags')}>
+                <option value="">{t(lang, 'tags')}</option>
+                {tags.map((tag) => <option value={tag}>{tag}</option>)}
+              </select>
+            )}
+            {years.length > 1 && (
+              <select data-filter="year" aria-label={t(lang, 'filterByYear')}>
+                <option value="">{t(lang, 'allYears')}</option>
+                {years.map((year) => <option value={String(year)}>{year}</option>)}
+              </select>
+            )}
+            <span class="count" data-filter-count></span>
+          </div>
+
+          <div class="grid grid--gallery">
+            {
+              items.map((item) => (
+                <button
+                  class="card gallery-card"
+                  type="button"
+                  data-gallery-card
+                  data-title={`${item.title} ${item.medium ?? ''} ${item.tags.join(' ')}`.toLowerCase()}
+                  data-year={item.year}
+                  data-tags={item.tags.join(',')}
+                  data-src={item.image}
+                  data-alt={item.title}
+                  data-title-full={item.title}
+                >
+                  <img src={item.image} alt={item.title} loading="lazy" />
+                  <div class="gallery-meta">
+                    <h3>{item.title}</h3>
+                    <p>{[item.medium, item.year].filter(Boolean).join(' · ')}</p>
+                  </div>
+                </button>
+              ))
+            }
+          </div>
+
+          <div class="no-results">{t(lang, 'noResults')}</div>
+        </div>
+      ) : (
+        <Empty
+          title={t(lang, 'galleryEmpty')}
+          text={t(lang, 'galleryHint')}
+          href={profile.kofi}
+          cta={t(lang, 'viewKofi')}
+        />
+      )
+    }
+
+    {items.length > 0 && <p class="mono muted mt-3">{t(lang, 'galleryHint')}</p>}
+  </div>
+
+  {
+    items.length > 0 && (
+      <dialog id="lightbox" class="lightbox">
+        <div class="lightbox-body">
+          <div class="lightbox-img-wrap">
+            <img id="lightbox-img" src="" alt="" />
+          </div>
+          <div class="lightbox-bar">
+            <h3 id="lightbox-title"></h3>
+            <div class="lightbox-actions">
+              <button class="btn btn--sm btn--ghost" type="button" id="lb-prev">
+                {t(lang, 'prevImage')}
+              </button>
+              <button class="btn btn--sm btn--ghost" type="button" id="lb-next">
+                {t(lang, 'nextImage')}
+              </button>
+              <button class="btn btn--sm" type="button" id="lb-close">
+                {t(lang, 'close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    )
+  }
+
+  <script>
+    const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-gallery-card]'));
+    const image = document.getElementById('lightbox-img') as HTMLImageElement | null;
+    const title = document.getElementById('lightbox-title');
+    const prev = document.getElementById('lb-prev');
+    const next = document.getElementById('lb-next');
+    const close = document.getElementById('lb-close');
+
+    let current = 0;
+
+    const show = (index: number) => {
+      if (!dialog || !image || !title || buttons.length === 0) return;
+      current = (index + buttons.length) % buttons.length;
+      const button = buttons[current];
+      image.src = button.dataset.src ?? '';
+      image.alt = button.dataset.alt ?? '';
+      title.textContent = button.dataset.titleFull ?? '';
+    };
+
+    const open = (index: number) => {
+      show(index);
+      dialog?.showModal();
+    };
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('click', () => open(index));
+    });
+
+    prev?.addEventListener('click', () => show(current - 1));
+    next?.addEventListener('click', () => show(current + 1));
+    close?.addEventListener('click', () => dialog?.close());
+
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!dialog?.open) return;
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        show(current - 1);
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        show(current + 1);
+      }
+    });
+  </script>
+</Base>

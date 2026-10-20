@@ -1,0 +1,23 @@
+---
+interface Props {
+  src?: string;
+  alt: string;
+  title: string;
+}
+
+const { src, alt, title } = Astro.props;
+---
+
+<div class="cover-wrap">
+  {
+    src ? (
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='grid';"
+      />
+    ) : null
+  }
+  <div class="cover-fallback" style={src ? 'display:none' : undefined}>{title}</div>
+</div>

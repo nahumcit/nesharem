@@ -1,0 +1,26 @@
+[
+  {
+    "image": "/kofi/01.png",
+    "title": "Ilustración 01",
+    "url": "https://ko-fi.com/nahumcm/gallery",
+    "date": "2026-10-05"
+  },
+  {
+    "image": "/kofi/02.png",
+    "title": "Kusitsu",
+    "url": "https://ko-fi.com/nahumcm/gallery",
+    "date": "2026-10-04"
+  },
+  {
+    "image": "/kofi/03.jpg",
+    "title": "Ilustración 03",
+    "url": "https://ko-fi.com/nahumcm/gallery",
+    "date": "2026-10-03"
+  },
+  {
+    "image": "/kofi/04.png",
+    "title": "Dark Deku",
+    "url": "https://ko-fi.com/nahumcm/gallery",
+    "date": "2026-10-02"
+  }
+]

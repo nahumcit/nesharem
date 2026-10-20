@@ -1,0 +1,14 @@
+[
+  {
+    "title": "ELDEN RING",
+    "cover": "/covers/games/elden-ring.jpg",
+    "status": "playing",
+    "score": 9,
+    "year": 2022,
+    "platform": "PC",
+    "hours": 120,
+    "favorite": true,
+    "steamAppId": 1245620,
+    "notes": ""
+  }
+]

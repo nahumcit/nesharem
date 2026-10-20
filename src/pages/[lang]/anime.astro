@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import ListPage from '../../components/ListPage.astro';
+import anime from '../../data/anime.json';
+import { languages, type Lang } from '../../i18n/ui';
+import { t } from '../../lib/site';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+---
+
+<Base lang={lang} title={`${t(lang, 'animeTitle')} — nesharem`} description={t(lang, 'animeIntro')}>
+  <div class="wrap">
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'navAnime')}</span>
+      <h1>{t(lang, 'animeTitle')}</h1>
+      <p class="muted">{t(lang, 'animeIntro')}</p>
+    </header>
+
+    <ListPage
+      lang={lang}
+      type="anime"
+      items={anime}
+      empty={t(lang, 'animeEmpty')}
+      search={t(lang, 'searchAnime')}
+    />
+  </div>
+</Base>

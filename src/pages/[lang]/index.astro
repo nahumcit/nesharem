@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import PostCard from '../../components/PostCard.astro';
+import KofiGrid from '../../components/KofiGrid.astro';
+import profile from '../../data/profile.json';
+import site from '../../data/site.json';
+import anime from '../../data/anime.json';
+import games from '../../data/games.json';
+import books from '../../data/books.json';
+import { languages, type Lang } from '../../i18n/ui';
+import { interestLabel, t } from '../../lib/site';
+import { getPosts } from '../../lib/posts';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const posts = await getPosts(lang, 3);
+const bio = profile.bio[lang].split('\n\n');
+const interests = profile.interests.map((key) => interestLabel(key, lang));
+
+const lists = [
+  { href: `/${lang}/anime`, label: t(lang, 'navAnime'), count: anime.length, desc: t(lang, 'animeIntro') },
+  { href: `/${lang}/games`, label: t(lang, 'navGames'), count: games.length, desc: t(lang, 'gamesIntro') },
+  { href: `/${lang}/books`, label: t(lang, 'navBooks'), count: books.length, desc: t(lang, 'booksIntro') },
+];
+---
+
+<Base
+  lang={lang}
+  title={`nesharem — ${profile.tagline[lang]}`}
+  description={site.description[lang]}
+>
+  <div class="wrap">
+    <section class="hero">
+      <div class="avatar-frame">
+        <img
+          class="avatar"
+          src={profile.avatar}
+          alt={t(lang, 'avatarAlt')}
+          width="210"
+          height="210"
+        />
+      </div>
+
+      <div>
+        <p class="meta">{profile.name} · {profile.age} · {profile.location[lang]}</p>
+        <h1>nesharem</h1>
+        <p class="tagline">{profile.tagline[lang]}</p>
+        <p>{bio[0]}</p>
+
+        <ul class="chips">
+          {interests.map((interest) => <li class="chip">{interest}</li>)}
+        </ul>
+
+        <div class="hero-actions">
+          <a class="btn" href={`/${lang}/gallery`}>{t(lang, 'navGallery')}</a>
+          <a
+            class="btn btn--ghost"
+            href={profile.kofi}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t(lang, 'viewKofi')}
+          </a>
+          <a class="btn btn--ghost" href={`/${lang}/about`}>{t(lang, 'navAbout')}</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <SectionHead
+        kicker="Ko-fi"
+        title={t(lang, 'latestWorks')}
+        href={profile.kofi}
+        linkLabel={t(lang, 'viewKofi')}
+      />
+      <KofiGrid lang={lang} />
+    </section>
+
+    <section class="section">
+      <SectionHead
+        kicker={t(lang, 'navBlog')}
+        title={t(lang, 'latestPosts')}
+        href={`/${lang}/blog`}
+        linkLabel={t(lang, 'viewAll')}
+      />
+      {
+        posts.length > 0 ? (
+          <div class="grid grid--posts">
+            {posts.map((post) => <PostCard post={post} lang={lang} />)}
+          </div>
+        ) : (
+          <div class="empty">
+            <p>{t(lang, 'noPosts')}</p>
+          </div>
+        )
+      }
+    </section>
+
+    <section class="section">
+      <SectionHead kicker="lists" title={`${t(lang, 'navAnime')} · ${t(lang, 'navGames')} · ${t(lang, 'navBooks')}`} />
+      <div class="grid grid--posts">
+        {
+          lists.map((list) => (
+            <a class="card post-card" href={list.href}>
+              <span class="kicker">{String(list.count).padStart(2, '0')}</span>
+              <h3>{list.label}</h3>
+              <p>{list.desc}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</Base>

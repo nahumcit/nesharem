@@ -1,0 +1,303 @@
+﻿media:
+  input: public/uploads
+  output: /uploads
+
+content:
+  - name: blog
+    label: Blog
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    filename: "{fields.lang}-{fields.slug}.md"
+    view:
+      primary: title
+      fields: [title, date, lang, draft]
+      sort: [date]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: slug
+        type: string
+        required: true
+        description: "URL del post, sin espacios. Ej: mi-primer-post"
+      - name: date
+        type: date
+        required: true
+      - name: updated
+        type: date
+      - name: author
+        type: string
+        default: Nahum
+      - name: lang
+        type: select
+        required: true
+        options:
+          values:
+            - name: es
+              label: EspaÃ±ol
+            - name: en
+              label: English
+            - name: ja
+              label: æ—¥æœ¬èªž
+            - name: zh
+              label: ä¸­æ–‡
+      - name: translationKey
+        type: string
+        description: "Mismo valor en las traducciones del mismo post."
+      - name: topics
+        type: select
+        list: true
+        options:
+          values:
+            - name: personal
+              label: Personal
+            - name: filosofia
+              label: FilosofÃ­a
+            - name: teologia
+              label: TeologÃ­a
+            - name: economia
+              label: EconomÃ­a
+            - name: futbol
+              label: FÃºtbol
+            - name: dibujo
+              label: Dibujo
+            - name: anime
+              label: Anime
+            - name: juegos
+              label: Juegos
+            - name: libros
+              label: Libros
+      - name: tags
+        type: string
+        list: true
+      - name: cover
+        type: image
+      - name: excerpt
+        type: text
+        required: true
+      - name: draft
+        type: boolean
+        default: false
+      - name: body
+        type: rich-text
+
+  - name: anime
+    label: Anime
+    type: file
+    path: src/data/anime.json
+    format: json
+    list: true
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: titleEn
+        type: string
+      - name: cover
+        type: image
+      - name: status
+        type: select
+        options:
+          values: [watching, completed, planned, dropped]
+      - name: score
+        type: number
+      - name: year
+        type: number
+      - name: episodes
+        type: number
+      - name: format
+        type: string
+      - name: favorite
+        type: boolean
+      - name: url
+        type: string
+      - name: notes
+        type: text
+
+  - name: games
+    label: Juegos
+    type: file
+    path: src/data/games.json
+    format: json
+    list: true
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: cover
+        type: image
+      - name: status
+        type: select
+        options:
+          values: [playing, played, planned, paused, dropped]
+      - name: score
+        type: number
+      - name: year
+        type: number
+      - name: platform
+        type: string
+      - name: hours
+        type: number
+      - name: favorite
+        type: boolean
+      - name: steamAppId
+        type: number
+      - name: url
+        type: string
+      - name: notes
+        type: text
+
+  - name: books
+    label: Libros
+    type: file
+    path: src/data/books.json
+    format: json
+    list: true
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: author
+        type: string
+      - name: cover
+        type: image
+      - name: status
+        type: select
+        options:
+          values: [reading, read, planned, onhold, dropped]
+      - name: score
+        type: number
+      - name: year
+        type: number
+      - name: isbn
+        type: string
+      - name: favorite
+        type: boolean
+      - name: url
+        type: string
+      - name: notes
+        type: text
+
+  - name: gallery
+    label: GalerÃ­a
+    type: file
+    path: src/data/gallery.json
+    format: json
+    list: true
+    fields:
+      - name: image
+        type: image
+        required: true
+      - name: title
+        type: string
+        required: true
+      - name: date
+        type: date
+      - name: medium
+        type: string
+      - name: tags
+        type: string
+        list: true
+
+  - name: kofi
+    label: Ko-fi
+    type: file
+    path: src/data/kofi.json
+    format: json
+    list: true
+    fields:
+      - name: image
+        type: image
+        required: true
+      - name: title
+        type: string
+        required: true
+      - name: url
+        type: string
+      - name: date
+        type: date
+
+  - name: profile
+    label: Perfil
+    type: file
+    path: src/data/profile.json
+    format: json
+    fields:
+      - name: name
+        type: string
+      - name: handle
+        type: string
+      - name: age
+        type: number
+      - name: avatar
+        type: image
+      - name: kofi
+        type: string
+      - name: location
+        type: object
+        fields:
+          - { name: es, type: string }
+          - { name: en, type: string }
+          - { name: ja, type: string }
+          - { name: zh, type: string }
+      - name: tagline
+        type: object
+        fields:
+          - { name: es, type: text }
+          - { name: en, type: text }
+          - { name: ja, type: text }
+          - { name: zh, type: text }
+      - name: bio
+        type: object
+        fields:
+          - { name: es, type: text }
+          - { name: en, type: text }
+          - { name: ja, type: text }
+          - { name: zh, type: text }
+      - name: interests
+        type: select
+        list: true
+        options:
+          values: [football, barcelona, philosophy, theology, economics, drawing]
+      - name: hobbies
+        type: select
+        list: true
+        options:
+          values: [drawing, reading, football, anime, games, writing]
+      - name: links
+        type: object
+        list: true
+        fields:
+          - { name: label, type: string }
+          - { name: url, type: string }
+          - { name: icon, type: string }
+
+  - name: site
+    label: Ajustes del sitio
+    type: file
+    path: src/data/site.json
+    format: json
+    fields:
+      - name: title
+        type: string
+      - name: url
+        type: string
+      - name: avatar
+        type: image
+      - name: kofi
+        type: string
+      - name: counterNamespace
+        type: string
+      - name: rss
+        type: string
+      - name: description
+        type: object
+        fields:
+          - { name: es, type: text }
+          - { name: en, type: text }
+          - { name: ja, type: text }
+          - { name: zh, type: text }

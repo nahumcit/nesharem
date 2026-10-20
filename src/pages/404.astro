@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import { t } from '../lib/site';
+---
+
+<Base
+  lang="es"
+  title={`404 — nesharem`}
+  description={t('es', 'notFoundText')}
+  translations={{ es: '/es/', en: '/en/', ja: '/ja/', zh: '/zh/' }}
+  noindex
+>
+  <div class="wrap wrap--narrow">
+    <div class="empty not-found">
+      <span class="kicker">nesharem</span>
+      <h1 class="not-found__code">404</h1>
+      <h2>{t('es', 'notFoundText')}</h2>
+      <p class="muted">Página no encontrada · Page not found</p>
+      <a class="btn" href="/es/">{t('es', 'goHome')}</a>
+    </div>
+  </div>
+</Base>

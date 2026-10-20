@@ -1,0 +1,105 @@
+---
+import { langMeta, languages, type Lang } from '../i18n/ui';
+import { swapLang, t } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+  translations?: Partial<Record<Lang, string | null>>;
+}
+
+const { lang, translations } = Astro.props;
+const path = Astro.url.pathname;
+
+const links: { href: string; key: 'navHome' | 'navAbout' | 'navGallery' | 'navAnime' | 'navGames' | 'navBooks' | 'navBlog' }[] = [
+  { href: `/${lang}/`, key: 'navHome' },
+  { href: `/${lang}/about`, key: 'navAbout' },
+  { href: `/${lang}/gallery`, key: 'navGallery' },
+  { href: `/${lang}/anime`, key: 'navAnime' },
+  { href: `/${lang}/games`, key: 'navGames' },
+  { href: `/${lang}/books`, key: 'navBooks' },
+  { href: `/${lang}/blog`, key: 'navBlog' },
+];
+
+const isActive = (href: string) => {
+  if (href === `/${lang}/`) return path === `/${lang}/` || path === `/${lang}`;
+  return path === href || path.startsWith(`${href}/`);
+};
+
+const langLinks = Object.fromEntries(
+  languages.map((code) => [
+    code,
+    translations?.[code] === null
+      ? `/${code}/blog/`
+      : (translations?.[code] ?? swapLang(path, code)),
+  ])
+) as Record<Lang, string>;
+---
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <input
+      type="checkbox"
+      id="nav-toggle"
+      class="nav-toggle"
+      aria-label={t(lang, 'menu')}
+    />
+
+    <a class="logo" href={`/${lang}/`} aria-label="nesharem">
+      <span class="logo-mark" aria-hidden="true">N</span>
+      <span>nesharem</span>
+    </a>
+
+    <nav class="site-nav" aria-label={t(lang, 'menu')}>
+      {
+        links.map((link) => (
+          <a
+            class="nav-link"
+            href={link.href}
+            aria-current={isActive(link.href) ? 'page' : undefined}
+          >
+            {t(lang, link.key)}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-tools">
+      <label class="theme-switch" title={t(lang, 'theme')}>
+        <input
+          type="checkbox"
+          id="theme-toggle"
+          class="theme-checkbox"
+          aria-label={t(lang, 'theme')}
+        />
+        <span class="theme-slider" aria-hidden="true"></span>
+      </label>
+
+      <details class="lang-menu">
+        <summary class="btn btn--sm btn--ghost" aria-label={t(lang, 'language')}>
+          {langMeta[lang].short}
+        </summary>
+        <ul>
+          {
+            languages.map((code) => (
+              <li>
+                <a
+                  href={langLinks[code]}
+                  hreflang={langMeta[code].htmlLang}
+                  aria-current={code === lang ? 'true' : undefined}
+                >
+                  {langMeta[code].label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+
+      <label for="nav-toggle" class="nav-burger" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+  </div>
+</header>

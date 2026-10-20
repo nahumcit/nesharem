@@ -1,0 +1,48 @@
+{
+  "name": "Nahum",
+  "handle": "nahumcm",
+  "age": 26,
+  "location": {
+    "es": "Costa Rica",
+    "en": "Costa Rica",
+    "ja": "コスタリカ",
+    "zh": "哥斯达黎加"
+  },
+  "avatar": "/avatar.png",
+  "kofi": "https://ko-fi.com/nahumcm",
+  "tagline": {
+    "es": "Dibujo, leo, juego y pienso demasiado.",
+    "en": "I draw, read, play and overthink.",
+    "ja": "描いて、読んで、遊んで、考えすぎる。",
+    "zh": "画画、读书、打游戏，想太多。"
+  },
+  "bio": {
+    "es": "Soy Nahum, tengo 26 años y vivo en Costa Rica.\n\nMe gusta el fútbol —soy del FC Barcelona—, la filosofía, la teología y la economía. Dibujo casi todos los días: es mi manera de pensar en voz alta.\n\nEste es mi rincón para ordenar lo que me gusta, lo que juego, lo que leo y lo que escribo.",
+    "en": "I am Nahum, 26 years old, based in Costa Rica.\n\nI love football —I am an FC Barcelona fan—, philosophy, theology and economics. I draw almost every day: it is how I think out loud.\n\nThis is my corner to keep track of what I like, what I play, what I read and what I write.",
+    "ja": "ナフムです。26歳、コスタリカ在住。\n\nサッカー（FCバルセロナ）、哲学、神学、経済学が好きです。ほぼ毎日絵を描いています。声に出して考える代わりに、手を動かすのです。\n\nここは、好きなもの、遊んだゲーム、読んだ本、書いたことを整理するための場所です。",
+    "zh": "我是 Nahum，26 岁，住在哥斯达黎加。\n\n我喜欢足球（巴塞罗那球迷）、哲学、神学和经济学。几乎每天都画画，这是我大声思考的方式。\n\n这里用来整理我喜欢的东西、玩过的游戏、读过的书和写下的文字。"
+  },
+  "interests": [
+    "football",
+    "barcelona",
+    "philosophy",
+    "theology",
+    "economics",
+    "drawing"
+  ],
+  "hobbies": [
+    "drawing",
+    "reading",
+    "football",
+    "anime",
+    "games",
+    "writing"
+  ],
+  "links": [
+    {
+      "label": "Ko-fi",
+      "url": "https://ko-fi.com/nahumcm",
+      "icon": "kofi"
+    }
+  ]
+}

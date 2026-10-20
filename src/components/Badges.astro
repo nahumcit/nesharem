@@ -1,0 +1,16 @@
+---
+import profile from '../data/profile.json';
+import type { Lang } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="badges">
+  <a href={`/${lang}/`}><img src="/badges/nesharem.svg" alt="nesharem" width="88" height="31" /></a>
+  <a href={`/${lang}/gallery`}><img src="/badges/handmade.svg" alt="hecho a mano" width="88" height="31" /></a>
+  <a href={profile.kofi} target="_blank" rel="noopener noreferrer"><img src="/badges/kofi.svg" alt="Ko-fi" width="88" height="31" /></a>
+</div>

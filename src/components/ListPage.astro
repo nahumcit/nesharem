@@ -1,0 +1,76 @@
+---
+import MediaCard from './MediaCard.astro';
+import Empty from './Empty.astro';
+import { statusLabel, t, type Lang } from '../lib/site';
+
+interface Item {
+  title: string;
+  cover?: string;
+  status?: string;
+  score?: number;
+  year?: number | string;
+  episodes?: number;
+  format?: string;
+  platform?: string;
+  hours?: number;
+  author?: string;
+  favorite?: boolean;
+  notes?: string;
+  [key: string]: unknown;
+}
+
+interface Props {
+  lang: Lang;
+  type: 'anime' | 'game' | 'book';
+  items: Item[];
+  empty: string;
+  search: string;
+}
+
+const { lang, type, items, empty, search } = Astro.props;
+
+const sorted = [...items].sort(
+  (a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.title.localeCompare(b.title)
+);
+const statuses = [...new Set(items.map((item) => item.status).filter(Boolean))] as string[];
+const years = [...new Set(items.map((item) => Number(item.year)).filter(Boolean))].sort((a, b) => b - a);
+---
+
+{
+  items.length > 0 ? (
+    <div data-filter-root>
+      <div class="filters">
+        <input type="search" data-filter="search" placeholder={search} aria-label={search} />
+        {statuses.length > 1 && (
+          <select data-filter="status" aria-label={t(lang, 'filterByStatus')}>
+            <option value="">{t(lang, 'allStatuses')}</option>
+            {statuses.map((status) => (
+              <option value={status}>{statusLabel(status, lang)}</option>
+            ))}
+          </select>
+        )}
+        {years.length > 1 && (
+          <select data-filter="year" aria-label={t(lang, 'filterByYear')}>
+            <option value="">{t(lang, 'allYears')}</option>
+            {years.map((year) => (
+              <option value={String(year)}>{year}</option>
+            ))}
+          </select>
+        )}
+        <label>
+          <input class="check" type="checkbox" data-filter="favorite" />
+          {t(lang, 'favorites')}
+        </label>
+        <span class="count" data-filter-count></span>
+      </div>
+
+      <div class="grid grid--media">
+        {sorted.map((item) => <MediaCard item={item} type={type} lang={lang} />)}
+      </div>
+
+      <div class="no-results">{t(lang, 'noResults')}</div>
+    </div>
+  ) : (
+    <Empty title={empty} text={t(lang, 'langNotice')} />
+  )
+}

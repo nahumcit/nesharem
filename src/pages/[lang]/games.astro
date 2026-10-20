@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import ListPage from '../../components/ListPage.astro';
+import games from '../../data/games.json';
+import { languages, type Lang } from '../../i18n/ui';
+import { t } from '../../lib/site';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+---
+
+<Base lang={lang} title={`${t(lang, 'gamesTitle')} — nesharem`} description={t(lang, 'gamesIntro')}>
+  <div class="wrap">
+    <header class="post-header">
+      <span class="kicker">nesharem · {t(lang, 'navGames')}</span>
+      <h1>{t(lang, 'gamesTitle')}</h1>
+      <p class="muted">{t(lang, 'gamesIntro')}</p>
+    </header>
+
+    <ListPage
+      lang={lang}
+      type="game"
+      items={games}
+      empty={t(lang, 'gamesEmpty')}
+      search={t(lang, 'searchGames')}
+    />
+  </div>
+</Base>
